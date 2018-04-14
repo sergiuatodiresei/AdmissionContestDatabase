@@ -10,7 +10,7 @@ URL fiser *students.json*:
 
 ## SELECT
 
-Se face request prin post cu un json, cu maxim 2 conditii ("cond1", "cond2").
+Se face request prin POST cu un json, cu maxim 2 conditii ("cond1", "cond2").
 
 ### Cheia "key" reprezinta "coloana" din tabel si poate avea urmatoarele valori pentru tabelul *students*:
 - **id**
@@ -29,7 +29,7 @@ Se face request prin post cu un json, cu maxim 2 conditii ("cond1", "cond2").
 - **>=**
 
 
-### Cheia "logical_condition" reprezinta conditia dintre *cond1* si *cond2* poate avea urmatoarele valori:
+### Cheia "logical_condition" reprezinta conditia dintre *cond1* si *cond2* si poate avea urmatoarele valori:
 - **AND**
 - **OR**
 
