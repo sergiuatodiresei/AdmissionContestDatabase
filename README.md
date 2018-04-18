@@ -83,7 +83,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 
 
 ### Ex. 2: 
-```perl
+```python
 {
 	"operation": "select",
 	"from": "students",
