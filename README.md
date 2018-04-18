@@ -73,16 +73,18 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 
 ### Ex. 1: 
 
-```javascript
+```json
 {
 	"operation": "select",
 	"from": "students"
 }
 ```
+
 - Traducere in sql: *SELECT * FROM students*
 
 
 ### Ex. 2: 
+
 ```json
 {
 	"operation": "select",
@@ -94,10 +96,12 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 		}
 }
 ```
+
 - Traducere in sql: *SELECT * FROM students WHERE id <= 10*
 
 ### Ex. 3: 
 
+```json
 {
 	"operation": "select",
 	"from": "students",
@@ -113,6 +117,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 		},
 	"logical_condition": "or"
 }
+```
 
 - Traducere in sql: *SELECT * FROM students WHERE id <= 10 OR first_name = 'Mircea'*
 
@@ -130,6 +135,7 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 
 ### Ex. 1: 
 
+```json
 {
 	"operation": "insert",
 	"into": "students",
@@ -140,12 +146,14 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 		"nota_examen": 9
 	}
 }
+```
 
 - Traducere in sql: *INSERT INTO students VALUES("Prenume_student", "Nume_student", 10, 9)*
 
 
 ### Ex. 2: 
 
+```json
 {
 	"operation": "insert",
 	"into": "students",
@@ -155,6 +163,7 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 		"nota_examen": 9
 	}
 }
+```
 
 - Traducere in sql: *INSERT INTO students VALUES("Prenume_student", "", 10, 9)*
 
