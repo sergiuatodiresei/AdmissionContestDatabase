@@ -72,7 +72,8 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 ## Exemple de teste:
 
 ### Ex. 1: 
-```json
+
+```javascript
 {
 	"operation": "select",
 	"from": "students"
@@ -82,7 +83,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 
 
 ### Ex. 2: 
-```Perl
+```perl
 {
 	"operation": "select",
 	"from": "students",
