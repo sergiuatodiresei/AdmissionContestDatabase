@@ -56,7 +56,8 @@ In cadrul unei conditii:
 - **AND**
 - **OR**
 
-## SELECT
+
+# SELECT
 
 Se face request prin POST cu un json, cu **maxim** 2 conditii ("cond1", "cond2").
 Se trimite **"operation": "select"** si **"from": "nume_tabel"**
@@ -125,7 +126,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 - Traducere in sql: *SELECT * FROM students WHERE id <= 10 OR first_name = 'Mircea'*
 
 
-## INSERT
+# INSERT
 
 Se face request prin POST cu un json, cu **"operation": "insert"** si **"into": "nume_tabel"**
 Se trimite perechea cheia **"values"** si un json ce contine "coloanele" (Vezi exemplu)
@@ -181,7 +182,7 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 - Alte erori - **{ "response": -22}**
 
 
-## UPDATE
+# UPDATE
 
 --Asemanator cu SELECT, are in plus campul json-ul *values*
 
@@ -258,3 +259,104 @@ Se trimite perechea cheia **"values"** si un json ce contine "coloanele" (Vezi e
 ## Posibile erori:
 
 - In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
+
+
+# DELETE
+
+**-- Foarte asemanator cu SELECT**
+
+Se face request prin POST cu un json, cu **"operation": "delete"** si **"from": "nume_tabel"** si **maxim** 2 conditii ("cond1", "cond2").
+
+**Daca delete-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}**
+
+## Exemple de teste:
+
+### Ex. 1: 
+
+```json
+{
+	"operation": "delete",
+	"from": "students",
+}
+```
+
+- Traducere in sql: *DELETE from students"*
+**- Se sterg toate randurile din tabel!**
+
+
+### Ex. 2: 
+
+```json
+{
+	"operation": "delete",
+	"from": "students",
+	"cond1": {
+		"key": "id",
+		"operator": "=",
+		"value": 4
+		},
+	"cond2": {
+		"key": "first_name",
+		"operator": "=",
+		"value": "Paula"
+		},
+	"logical_condition": "or"
+}
+```
+
+- Traducere in sql: *DELETE from students WHERE last_name = "Port" WHERE id = 4 or id = 5*
+
+
+# CREATE
+
+**-- Asemanator cu INSERT**
+
+Se face request prin POST cu un json, cu **"operation": "create"** si **"table": "nume_tabel"**
+Se trimite perechea cheia **"values"** si un json ce contine ca si chei "coloanele" (structura tabelului), iar ca valori ""  (Vezi exemplu)
+
+**ID-ul nu se trimite (el se autoincrementeaza).**
+
+**Daca create-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}.**
+
+Daca create-ul s-a efectuat cu succes, vor fi create 2 fisiere in storage, *nume_tabel.json* (un fisier cu array empty) si *struct_nume_tabel.json* (acesta contine structura tabelul, adica ce se trimite in *values*.
+
+## Exemplu de test:
+
+```json
+{
+	"operation": "create",
+	"table": "judete",
+	"values": {
+		"nume": "",
+		"suprafata": "",
+		"populatie": ""
+	}
+}
+```
+
+- Traducere in sql: *CREATE TABLE judete (nume varchar, suprafata int, populatie int)*
+
+## Posibile erori:
+
+- In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
+- Daca tabelul exista deja, raspunsul va fi: **{ "response": 0}**
+
+
+# DROP
+
+*-- Fisierele nume_tabel.json si struct_nume_tabel.json se sterg din storage!*
+
+Se face request prin POST cu un json, cu **"operation": "drop"** si **"table": "nume_tabel"**
+
+**Daca drop-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}, altfel {"response": 0}.**
+
+## Exemplu de test:
+
+```json
+{
+	"operation": "drop",
+	"table": "judete"
+}
+```
+
+- Traducere in sql: *DROP TABLE judete;*
