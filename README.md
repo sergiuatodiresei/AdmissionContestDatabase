@@ -4,15 +4,15 @@
 
 ## http://admissioncontest.us-east-2.elasticbeanstalk.com/AdmissionContestServlet
 
-URL fiser *students.json*:
+URL fisier *students.json*:
 
 ###  https://s3.amazonaws.com/admission-contest/database/students.json
 
-URL fiser *struct_students.json*:
+URL fisier *struct_students.json*:
 
 ###  https://s3.amazonaws.com/admission-contest/database/struct_students.json
 
-URL fiser *criterii_insert_students.json*:
+URL fisier *criterii_insert_students.json*:
 
 ###  https://s3.amazonaws.com/admission-contest/database/criterii_insert_students.json
 
