@@ -72,12 +72,12 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 ## Exemple de teste:
 
 ### Ex. 1: 
-
+```
 {
 	"operation": "select",
 	"from": "students"
 }
-
+```
 - Traducere in sql: *SELECT * FROM students*
 
 
