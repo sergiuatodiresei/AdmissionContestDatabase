@@ -175,4 +175,4 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 - In caz ca nu se trimite nota_examen, raspunsul va fi: **{ "response": -19}**
 - In caz ca pentru medie_bac se trimit alte valori din intervalul [5,10], raspunsul va fi: **{ "response": -20}**
 - In caz ca pentru nota_examen se trimit alte valori din intervalul [0,10], raspunsul va fi: **{ "response": -21}**
-- Alte erori - **{ "response": -21}**
+- Alte erori - **{ "response": -22}**
