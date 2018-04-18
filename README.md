@@ -72,7 +72,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 ## Exemple de teste:
 
 ### Ex. 1: 
-```
+```json
 {
 	"operation": "select",
 	"from": "students"
@@ -82,7 +82,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 
 
 ### Ex. 2: 
-
+```Perl
 {
 	"operation": "select",
 	"from": "students",
@@ -92,7 +92,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 		"value": 10
 		}
 }
-
+```
 - Traducere in sql: *SELECT * FROM students WHERE id <= 10*
 
 ### Ex. 3: 
