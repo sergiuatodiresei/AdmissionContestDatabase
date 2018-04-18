@@ -27,6 +27,8 @@ In cadrul unei conditii:
 - In caz ca se trimite un operator gresit (*operator*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -13}**
 - In caz ca se trimite o cheie gresita (*key*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -14}**
 - In caz ca se trimite o valoare de comparatie gresita (*value*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -15}**
+- In caz ca se trimit 2 conditii, iar *"logical_condition"* nu este trimis sau este trimis ceva invalid, raspunsul va fi: **{ "response": -23}**
+- In caz ca nu se citesc bine conditiile: **{ "response": -24}**
 
 
 ### Cheia "operation" poate avea urmatoarele valori:
@@ -42,20 +44,6 @@ In cadrul unei conditii:
 - **into**
 - **table**
 
-## SELECT
-
-Se face request prin POST cu un json, cu **maxim** 2 conditii ("cond1", "cond2").
-Se trimite **"operation": "select"** si **"from": "nume_tabel"**
-
-### Cheia "key" reprezinta "coloana" din tabel si poate avea urmatoarele valori pentru tabelul *students*:
-- **id**
-- **first_name**
-- **last_name**
-- **medie_bac**
-- **nota_examen**
-- **medie**
-
-
 ### Cheia "operator" poate avea urmatoarele valori:
 - **=**
 - **<**
@@ -67,6 +55,21 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 ### Cheia "logical_condition" reprezinta conditia dintre *cond1* si *cond2* si poate avea urmatoarele valori:
 - **AND**
 - **OR**
+
+## SELECT
+
+Se face request prin POST cu un json, cu **maxim** 2 conditii ("cond1", "cond2").
+Se trimite **"operation": "select"** si **"from": "nume_tabel"**
+
+**Raspunsul va fi un array de json-uri.**
+
+### Cheia "key" reprezinta "coloana" din tabel si poate avea urmatoarele valori pentru tabelul *students*:
+- **id**
+- **first_name**
+- **last_name**
+- **medie_bac**
+- **nota_examen**
+- **medie**
 
 
 ## Exemple de teste:
@@ -129,7 +132,7 @@ Se trimite perechea cheia **"values"** si un json ce contine "coloanele" (Vezi e
 ID-ul nu se trimite (el se autoincrementeaza). Nu e necesar sa fie trimise toate coloanele. Coloanele lipsa vor adaugate automat cu valoarea "".
 Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza datelor din tabelul **criterii_insert_students**, dar **"medie_bac"** si **"nota_examen"** trebuie.
 
-**Daca insertul s-a efectuat cu succes, raspunsul va fi {"response": 1}**
+**Daca insert-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}**
 
 ## Exemple de teste:
 
@@ -176,3 +179,82 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 - In caz ca pentru medie_bac se trimit alte valori din intervalul [5,10], raspunsul va fi: **{ "response": -20}**
 - In caz ca pentru nota_examen se trimit alte valori din intervalul [0,10], raspunsul va fi: **{ "response": -21}**
 - Alte erori - **{ "response": -22}**
+
+
+## UPDATE
+
+--Asemanator cu SELECT, are in plus campul json-ul *values*
+
+Se face request prin POST cu un json, cu **"operation": "update"** si **"table": "nume_tabel"**
+Se trimite perechea cheia **"values"** si un json ce contine "coloanele" (Vezi exemplu)
+
+**Daca update-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}**
+
+## Exemple de teste:
+
+### Ex. 1: 
+
+```json
+{
+	"operation": "update",
+	"table": "students",
+	"values": {
+		"last_name": "Port"
+	}
+		
+}
+```
+
+- Traducere in sql: *UPDATE students SET last_name = "Port"*
+- Se modifica toate randurile din tabel
+
+
+### Ex. 2: 
+
+```json
+{
+	"operation": "update",
+	"table": "students",
+	"values": {
+		"last_name": "Port"
+	},
+	"cond1": {
+		"key": "id",
+		"operator": "=",
+		"value": 4
+		}
+		
+}
+```
+
+- Traducere in sql: *UPDATE students SET last_name = "Port" WHERE id = 4*
+
+### Ex. 3: 
+
+```json
+{
+	"operation": "update",
+	"table": "students",
+	"values": {
+		"last_name": "Port"
+	},
+	"cond1": {
+		"key": "id",
+		"operator": "=",
+		"value": 4
+		},
+	"cond2": {
+		"key": "id",
+		"operator": "=",
+		"value": 5
+		},
+	"logical_condition": "OR"
+		
+}
+```
+
+- Traducere in sql: *UPDATE students SET last_name = "Port" WHERE id = 4 or id = 5*
+
+## Posibile erori:
+
+- In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
