@@ -179,7 +179,40 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 - In caz ca nu se trimite nota_examen, raspunsul va fi: **{ "response": -19}**
 - In caz ca pentru medie_bac se trimit alte valori din intervalul [5,10], raspunsul va fi: **{ "response": -20}**
 - In caz ca pentru nota_examen se trimit alte valori din intervalul [0,10], raspunsul va fi: **{ "response": -21}**
+- In caz ca se trimite o valoarea de tip gresit (in loc de number, se trimite text si invers), raspunsul va fi: **{ "response": -30}**
+De exemplu: "medie_bac": "10" sau "first_name": 0,
 - Alte erori - **{ "response": -22}**
+
+
+# INSERT_ARRAY
+
+## La fel ca INSERT, doar ca se trimite un array la values
+
+Se face request prin POST cu un json, cu **"operation": "insert_array"** si **"into": "nume_tabel"**
+Se trimite perechea **"values_array"** si un json array.
+
+**Daca insert-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}**
+
+## Exemplu de test:
+
+```json
+{
+	"operation": "insert_array",
+	"into": "students",
+	"values_array": [{
+		"first_name": "Gigi",
+		"last_name": "Buhnici",
+		"medie_bac": 10,
+		"nota_examen": 9
+	},
+	{
+		"first_name": "Mircea",
+		"last_name": "Iosif",
+		"medie_bac": 10,
+		"nota_examen": 10
+	}]
+}
+```
 
 
 # UPDATE
@@ -259,7 +292,8 @@ Se trimite perechea cheia **"values"** si un json ce contine "coloanele" (Vezi e
 ## Posibile erori:
 
 - In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
-
+- In caz ca se trimite o valoarea de tip gresit (in loc de number, se trimite text si invers), raspunsul va fi: **{ "response": -30}**
+De exemplu: "medie_bac": "10" sau "last_name": 0,
 
 # DELETE
 
@@ -312,9 +346,7 @@ Se face request prin POST cu un json, cu **"operation": "delete"** si **"from": 
 **-- Asemanator cu INSERT**
 
 Se face request prin POST cu un json, cu **"operation": "create"** si **"table": "nume_tabel"**
-Se trimite perechea cheia **"values"** si un json ce contine ca si chei "coloanele" (structura tabelului), iar ca valori ""  (Vezi exemplu)
-
-**ID-ul nu se trimite (el se autoincrementeaza).**
+Se trimite perechea cheia **"values"** si un json ce contine ca si chei "coloanele" (structura tabelului), iar ca valori se trimite tipul dorit, **number** sau **text**  (vezi exemplu).
 
 **Daca create-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}.**
 
@@ -327,9 +359,9 @@ Daca create-ul s-a efectuat cu succes, vor fi create 2 fisiere in storage, *nume
 	"operation": "create",
 	"table": "judete",
 	"values": {
-		"nume": "",
-		"suprafata": "",
-		"populatie": ""
+		"nume": "text",
+		"suprafata": "number",
+		"populatie": "number"
 	}
 }
 ```
@@ -339,6 +371,7 @@ Daca create-ul s-a efectuat cu succes, vor fi create 2 fisiere in storage, *nume
 ## Posibile erori:
 
 - In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
+- In caz ca tipul trimis nu e **text** sau **number**, raspunsul va fi: **{ "response": -29}**
 - Daca tabelul exista deja, raspunsul va fi: **{ "response": 0}**
 
 
