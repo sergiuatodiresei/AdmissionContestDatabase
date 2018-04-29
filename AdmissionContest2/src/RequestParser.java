@@ -1,9 +1,11 @@
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class RequestParser {
 
 	private static final String JVAL_SELECT = "select";
 	private static final String JVAL_INSERT = "insert";
+	private static final String JVAL_INSERT_ARRAY = "insert_array";
 	private static final String JVAL_DELETE = "delete";
 	private static final String JVAL_UPDATE = "update";
 	private static final String JVAL_CREATE = "create";
@@ -34,9 +36,10 @@ public class RequestParser {
 	private Condition condition1;
 	private Condition condition2;
 	private JSONObject values;
+	private JSONArray valuesArray;
 	
 	public enum OPERATION {
-		SELECT,INSERT,UPDATE,DELETE,CREATE, DROP, INVALID_OPERATION	
+		SELECT,INSERT,INSERT_ARRAY,UPDATE,DELETE,CREATE, DROP, INVALID_OPERATION	
 	}
 	
 	public enum CONDITION_LOGIC {
@@ -86,14 +89,16 @@ public class RequestParser {
 					cond2.optString(JKEY_VALUE));
 		}
 		logicalCondition = (condition1 != null && condition2 != null) ? handleLogicalCondition(input.optString(JKEY_CONDITION)) : CONDITION_LOGIC.NOT_NEEDED;
-	
+
 		values = input.optJSONObject("values");
+		valuesArray = input.optJSONArray("values_array");
 	}
 	
 	public OPERATION handleOperation(String op) {
 		switch (op) {
 			case JVAL_SELECT: return OPERATION.SELECT;
 			case JVAL_INSERT: return OPERATION.INSERT;
+			case JVAL_INSERT_ARRAY: return OPERATION.INSERT_ARRAY;
 			case JVAL_UPDATE: return OPERATION.UPDATE;
 			case JVAL_DELETE: return OPERATION.DELETE;
 			case JVAL_CREATE: return OPERATION.CREATE;
@@ -143,5 +148,9 @@ public class RequestParser {
 	
 	public JSONObject getValues() {
 		return values;
+	}
+	
+	public JSONArray getValuesArray() {
+		return valuesArray;
 	}
 }

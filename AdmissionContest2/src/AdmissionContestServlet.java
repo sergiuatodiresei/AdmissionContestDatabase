@@ -77,6 +77,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("utf-8");
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		PrintWriter out = response.getWriter();
 		
 		out.print("Only POST requests :D");
@@ -91,6 +92,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("utf-8");
+		response.addHeader("Access-Control-Allow-Origin", "*");
 		
 		PrintWriter out = response.getWriter();
 		
@@ -211,12 +213,24 @@ public class AdmissionContestServlet extends HttpServlet {
 			
 			switch (requestParser.getOperation()) {
 			case SELECT: 
+				
+				if(requestParser.getTable().equals("criterii_insert_students")) {
+					
+					String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+					response.print(jsonCriteriiFile);
+					return;
+				}
+				
 				jsonData = new JSONArray(jsonFile);
 				handleSelect(requestParser, jsonData, response);
 				break;
 			case INSERT: 
 				jsonData = new JSONArray(jsonFile);
 				handleInsert(requestParser, jsonData, pathFile, response);
+				break;
+			case INSERT_ARRAY: 
+				jsonData = new JSONArray(jsonFile);
+				handleInsertArray(requestParser, jsonData, pathFile, response);
 				break;
 			case UPDATE: 
 				jsonData = new JSONArray(jsonFile);
@@ -285,6 +299,67 @@ public class AdmissionContestServlet extends HttpServlet {
 			jsonStructFile = ao.downloadJson(folder + "struct_" + table + ".json");
 		}
 		
+		try {
+			values.put("id", Utils.getMaxId(jsonFile) + 1);
+		
+		
+			if (!jsonStructFile.isEmpty()) {
+				
+				JSONObject jsonStruct = new JSONObject(jsonStructFile);
+				
+				Iterator<?> keys = jsonStruct.keys();
+	
+				while( keys.hasNext() ) {
+				    String key = (String)keys.next();
+				    if (!values.has(key)) {
+				    	values.put(key, "");
+				    } else {
+				    	if (jsonStruct.getString(key).equals("number")) {
+				    		
+				    		if (values.get(key) instanceof String) {
+				    			response.print("{\"response\": -30}");
+				    			return;
+				    		}
+				    		
+				    	} else {
+				    		if (values.get(key) instanceof Double) {
+				    			response.print("{\"response\": -30}");
+				    			return;
+				    		}
+				    		if (values.get(key) instanceof Float) {
+				    			response.print("{\"response\": -30}");
+				    			return;
+				    		}
+				    		if (values.get(key) instanceof Integer) {
+				    			response.print("{\"response\": -30}");
+				    			return;
+				    		}
+				    	}
+				    }
+				}
+				
+				keys = values.keys();
+				
+				JSONObject valuesTemp = new JSONObject(values.toString());
+				
+				while( keys.hasNext() ) {
+				    String key = (String)keys.next();
+				    if (!jsonStruct.has(key) && !key.equals("id")) {
+				    	
+				    	valuesTemp.remove(key);
+				    } 
+				}
+				
+				values = valuesTemp;
+			}
+		
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			response.print("{\"response\": -22}");
+			return;
+		}
+		
 		
 		if (requestParser.getTable().equals("students")) {
 			
@@ -341,31 +416,6 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		}
 		
-		try {
-			values.put("id", Utils.getMaxId(jsonFile) + 1);
-		
-		
-			if (!jsonStructFile.isEmpty()) {
-				
-				JSONObject jsonStruct = new JSONObject(jsonStructFile);
-				
-				Iterator<?> keys = jsonStruct.keys();
-	
-				while( keys.hasNext() ) {
-				    String key = (String)keys.next();
-				    if (!values.has(key)) {
-				    	values.put(key, "");
-				    }
-				}
-			}
-		
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			response.print("{\"response\": -22}");
-			return;
-		}
-		
 			
 		jsonFile.put(values);
 		
@@ -376,24 +426,276 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 	}
 	
+	public void handleInsertArray(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
+		
+		JSONArray values= requestParser.getValuesArray();
+		
+		
+		
+		String table = requestParser.getTable();
+	
+		if (values == null || table == null) {
+			response.print("{\"response\": -16}");
+			return;
+		}
+		
+		if (values.length() == 0) {
+			response.print("{\"response\": -16}");
+			return;
+		}
+		
+		String jsonStructFile = "";
+		
+		if (ao.fileExist(folder + "struct_" + table + ".json")) {
+			jsonStructFile = ao.downloadJson(folder + "struct_" + table + ".json");
+		}
+		
+	
+		if (requestParser.getTable().equals("students")) {
+			
+			String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+			
+			if (jsonCriteriiFile.isEmpty()) {
+				response.print("{\"response\": -17}");
+				return;
+			}
+			
+			JSONObject jsonCriterii;
+			try {
+				
+				jsonCriterii = new JSONObject(jsonCriteriiFile);
+				
+				
+				Double pondereBac = jsonCriterii.optDouble("pondere_bac");
+				Double pondereExamen = jsonCriterii.optDouble("pondere_examen");
+				
+				
+				for(int i=0; i<values.length(); i++) {
+					
+					JSONObject value = values.optJSONObject(i);
+					
+					if (value == null) {
+						response.print("{\"response\": -16}");
+						return;
+					}
+				
+					if (!value.has("medie_bac")) {
+						response.print("{\"response\": -18}");
+						return;
+					}
+					
+					if (!value.has("nota_examen")) {
+						response.print("{\"response\": -19}");
+						return;
+					}
+					
+					value.put("id", Utils.getMaxId(jsonFile) + 1);
+					
+					
+					if (!jsonStructFile.isEmpty()) {
+						
+						JSONObject jsonStruct = new JSONObject(jsonStructFile);
+						
+						Iterator<?> keys = jsonStruct.keys();
+			
+						while( keys.hasNext() ) {
+						    String key = (String)keys.next();
+						    if (!value.has(key)) {
+						    	value.put(key, "");
+						    } else {
+						    	if (jsonStruct.getString(key).equals("number")) {
+						    		
+						    		if (value.get(key) instanceof String) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		
+						    	} else {
+						    		if (value.get(key) instanceof Double) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		if (value.get(key) instanceof Float) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		if (value.get(key) instanceof Integer) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    	}
+						    }
+						}
+						
+						keys = value.keys();
+						
+						JSONObject valueTemp = new JSONObject(value.toString());
+						
+						while( keys.hasNext() ) {
+						    String key = (String)keys.next();
+						    if (!jsonStruct.has(key) && !key.equals("id")) {
+						    	valueTemp.remove(key);
+						    } 
+						}
+						
+						value = valueTemp;
+					}
+					
+					
+					Double medieBac = value.getDouble("medie_bac");
+					Double notaExamen = value.getDouble("nota_examen");
+					
+					if (medieBac > 10 || medieBac < 5) {
+						response.print("{\"response\": -20}");
+						return;
+					}
+					
+					if (notaExamen > 10 || notaExamen < 0) {
+						response.print("{\"response\": -21}");
+						return;
+					}
+					
+					Double medie = medieBac * pondereBac + notaExamen * pondereExamen;
+					
+					value.put("medie", medie);
+					
+					jsonFile.put(value);
+				}
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				response.print("{\"response\": -22}");
+				return;
+			}
+		
+		} else {
+		
+			try {
+				
+				for(int i=0; i<values.length(); i++) {
+					
+					JSONObject value = values.optJSONObject(i);
+					
+					if (value == null) {
+						response.print("{\"response\": -16}");
+						return;
+					}
+				
+					value.put("id", Utils.getMaxId(jsonFile) + 1);
+				
+				
+					if (!jsonStructFile.isEmpty()) {
+						
+						JSONObject jsonStruct = new JSONObject(jsonStructFile);
+						
+						Iterator<?> keys = jsonStruct.keys();
+			
+						while( keys.hasNext() ) {
+						    String key = (String)keys.next();
+						    if (!value.has(key)) {
+						    	value.put(key, "");
+						    } else {
+						    	if (jsonStruct.getString(key).equals("number")) {
+						    		
+						    		if (value.get(key) instanceof String) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		
+						    	} else {
+						    		if (value.get(key) instanceof Double) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		if (value.get(key) instanceof Float) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    		if (value.get(key) instanceof Integer) {
+						    			response.print("{\"response\": -30}");
+						    			return;
+						    		}
+						    	}
+						    }
+						}
+						
+						keys = value.keys();
+						
+						JSONObject valueTemp = new JSONObject(value.toString());
+						
+						while( keys.hasNext() ) {
+						    String key = (String)keys.next();
+						    if (!jsonStruct.has(key) && !key.equals("id")) {
+						    	valueTemp.remove(key);
+						    } 
+						}
+						
+						value = valueTemp;
+					}
+					jsonFile.put(value);
+				}
+			
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				response.print("{\"response\": -22}");
+				return;
+			}
+		
+		}
+		
+		ao.uploadJson(pathFile, jsonFile.toString());
+			
+		response.print("{\"response\": 1}");
+		
+		
+	}
+	
 	
 	public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
 		
-		JSONArray updatedObjects = Utils.getUpdatedObjects(requestParser, jsonFile);
+		String jsonStructFile = "";
 		
-		if (!updatedObjects.toString().equals("[{\"response\":-13}]") && !updatedObjects.toString().equals("[{\"response\":-16}]") && !updatedObjects.toString().equals("[{\"response\":-23}]") &&  !updatedObjects.toString().equals("[{\"response\":-24}]")) {
+		if (ao.fileExist(folder + "struct_" + requestParser.getTable() + ".json")) {
+			jsonStructFile = ao.downloadJson(folder + "struct_" + requestParser.getTable() + ".json");
+		}
+		
+		if (jsonStructFile.isEmpty()) {
+			response.print("{\"response\": -1}");
+			return;
+		}
+		
+		JSONObject jsonStruct = new JSONObject();
+		try {
+			jsonStruct = new JSONObject(jsonStructFile);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			response.print("{\"response\": -1}");
+			e.printStackTrace();
+		}
+		
+		JSONArray updatedObjects = Utils.getUpdatedObjects(requestParser, jsonFile, jsonStruct);
+		
+		if (!updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") && !updatedObjects.toString().equals("[\"{\\\"response\\\": -13}\"]") 
+				&& !updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") && !updatedObjects.toString().equals("[\"{\\\"response\\\": -23}\"]") 
+				&&  !updatedObjects.toString().equals("[\"{\\\"response\\\": -24}\"]") &&  !updatedObjects.toString().equals("[\"{\\\"response\\\": -30}\"]")) {
 			
 			ao.uploadJson(pathFile, updatedObjects.toString());
 			
 			response.print("{\"response\": 1}");
-		} else if (updatedObjects.toString().equals("[{\"response\":-13}]")) {
+		}else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -1}\"]")) {
+			response.print("{\"response\": -1}");
+		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -13}\"]")) {
 			response.print("{\"response\": -13}");
-		} else if (updatedObjects.toString().equals("[{\"response\":-16}]")) {
+		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]")) {
 			response.print("{\"response\": -16}");
-		} else if (updatedObjects.toString().equals("[{\"response\":-23}]")) {
+		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -23}\"]")) {
 			response.print("{\"response\": -23}");
-		} else if (updatedObjects.toString().equals("[{\"response\":-24}]")) {
+		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -24}\"]")) {
 			response.print("{\"response\": -24}");
+		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -30}\"]")) {
+			response.print("{\"response\": -30}");
 		}
 		
 		
@@ -444,6 +746,22 @@ public class AdmissionContestServlet extends HttpServlet {
 			return;
 		}
 		
+		Iterator<?> keys = values.keys();
+		
+		while( keys.hasNext() ) {
+		    String key = (String)keys.next();
+		    
+		    try {
+				if (!values.getString(key).equals("number") && !values.getString(key).equals("text")) {
+					response.print("{\"response\": -29}");
+					return;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				response.print("{\"response\": -29}");
+				return;
+			}
+		}
 		
 		ao.uploadJson(pathFile, "[]");
 		

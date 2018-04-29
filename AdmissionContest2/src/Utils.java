@@ -224,9 +224,11 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							jsonFile.remove(i);
+							i--;
 						}
 					} else if (ok) {
 						jsonFile.remove(i);
+						i--;
 					}
 					
 					break;
@@ -247,9 +249,11 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							jsonFile.remove(i);
+							i--;
 						}
 					} else if (ok) {
 						jsonFile.remove(i);
+						i--;
 					}	
 					
 					break;
@@ -270,9 +274,11 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							jsonFile.remove(i);
+							i--;
 						}
 					} else if (ok) {
 						jsonFile.remove(i);
+						i--;
 					}
 					
 					break;
@@ -284,6 +290,7 @@ public class Utils {
 						if (object.optInt(condition.key) >= intValue) {
 							ok = true;
 						}
+						
 					} catch(NumberFormatException e) { 
 						if (object.optString(condition.key).compareTo(condition.stringValue) >= 0) {
 							ok = true;
@@ -293,9 +300,11 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							jsonFile.remove(i);
+							i--;
 						}
 					} else if (ok) {
 						jsonFile.remove(i);
+						i--;
 					}
 					
 					break;
@@ -315,6 +324,7 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							jsonFile.remove(i);
+							i--;
 						}
 					} else if (ok) {
 						jsonFile.remove(i);
@@ -323,6 +333,7 @@ public class Utils {
 					break;
 				default:
 					jsonError.put("{\"response\": -13}");
+					i--;
 					return jsonError;
 				}
 					
@@ -425,7 +436,7 @@ public class Utils {
 		}
 		
 		
-		public static JSONArray getUpdatedObjects(RequestParser requestParser, JSONArray jsonFile) {
+		public static JSONArray getUpdatedObjects(RequestParser requestParser, JSONArray jsonFile, JSONObject jsonStruct) {
 			
 			JSONArray jsonResponse = new JSONArray();
 			
@@ -447,21 +458,15 @@ public class Utils {
 						return jsonResponse;
 					}
 					
-					Iterator<?> keys = values.keys();
+					UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 					
-					while( keys.hasNext() ) {
-					    String key = (String)keys.next();
-					    if (object.has(key)) {
-					    	try {
-								object.put(key, values.get(key));
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					    }
+					if (updatedObject.ok) {
+						jsonResponse.put(updatedObject.object);
+					} else {
+						jsonResponse = new JSONArray();
+						jsonResponse.put("{\"response\": -30}");
+						return jsonResponse;
 					}
-					
-					jsonResponse.put(object);
 				}
 				
 				return jsonResponse;
@@ -514,42 +519,56 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							
-							Iterator<?> keys = values.keys();
+//							Iterator<?> keys = values.keys();
+//							
+//							while( keys.hasNext() ) {
+//							    String key = (String)keys.next();
+//							    if (object.has(key)) {
+//							    	try {
+//							    		
+//							    		if(!isValueCorrect(jsonStruct, values, key)) {
+//							    			jsonResponse = new JSONArray();
+//											jsonResponse.put("{\"response\": -30}");
+//											return jsonResponse;
+//							    		}
+//							    		
+//										object.put(key, values.get(key));
+//									} catch (JSONException e) {
+//										// TODO Auto-generated catch block
+//										e.printStackTrace();
+//									}
+//							    }
+//							}
+//							
+//							jsonResponse.put(object);
 							
-							while( keys.hasNext() ) {
-							    String key = (String)keys.next();
-							    if (object.has(key)) {
-							    	try {
-										object.put(key, values.get(key));
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							    }
+							UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
+							
+							if (updatedObject.ok) {
+								jsonResponse.put(updatedObject.object);
+							} else {
+								jsonResponse = new JSONArray();
+								jsonResponse.put("{\"response\": -30}");
+								return jsonResponse;
 							}
 							
-							jsonResponse.put(object);
 							
 						} else {
 							jsonResponse.put(object);
 						}
 					} else if (ok) {
 						
-						Iterator<?> keys = values.keys();
+						UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 						
-						while( keys.hasNext() ) {
-						    String key = (String)keys.next();
-						    if (object.has(key)) {
-						    	try {
-									object.put(key, values.get(key));
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-						    }
+						if (updatedObject.ok) {
+							jsonResponse.put(updatedObject.object);
+						} else {
+							jsonResponse = new JSONArray();
+							jsonResponse.put("{\"response\": -30}");
+							return jsonResponse;
 						}
 						
-						jsonResponse.put(object);
+						
 					} else {
 						jsonResponse.put(object);
 					}
@@ -572,42 +591,30 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							
-							Iterator<?> keys = values.keys();
+							UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 							
-							while( keys.hasNext() ) {
-							    String key = (String)keys.next();
-							    if (object.has(key)) {
-							    	try {
-										object.put(key, values.get(key));
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							    }
+							if (updatedObject.ok) {
+								jsonResponse.put(updatedObject.object);
+							} else {
+								jsonResponse = new JSONArray();
+								jsonResponse.put("{\"response\": -30}");
+								return jsonResponse;
 							}
-							
-							jsonResponse.put(object);
 							
 						} else {
 							jsonResponse.put(object);
 						}
 					} else if (ok) {
 						
-						Iterator<?> keys = values.keys();
+						UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 						
-						while( keys.hasNext() ) {
-						    String key = (String)keys.next();
-						    if (object.has(key)) {
-						    	try {
-									object.put(key, values.get(key));
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-						    }
+						if (updatedObject.ok) {
+							jsonResponse.put(updatedObject.object);
+						} else {
+							jsonResponse = new JSONArray();
+							jsonResponse.put("{\"response\": -30}");
+							return jsonResponse;
 						}
-						
-						jsonResponse.put(object);
 					} else {
 						jsonResponse.put(object);
 					}	
@@ -630,42 +637,30 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							
-							Iterator<?> keys = values.keys();
+							UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 							
-							while( keys.hasNext() ) {
-							    String key = (String)keys.next();
-							    if (object.has(key)) {
-							    	try {
-										object.put(key, values.get(key));
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							    }
+							if (updatedObject.ok) {
+								jsonResponse.put(updatedObject.object);
+							} else {
+								jsonResponse = new JSONArray();
+								jsonResponse.put("{\"response\": -30}");
+								return jsonResponse;
 							}
-							
-							jsonResponse.put(object);
 							
 						} else {
 							jsonResponse.put(object);
 						}
 					} else if (ok) {
 						
-						Iterator<?> keys = values.keys();
+						UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 						
-						while( keys.hasNext() ) {
-						    String key = (String)keys.next();
-						    if (object.has(key)) {
-						    	try {
-									object.put(key, values.get(key));
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-						    }
+						if (updatedObject.ok) {
+							jsonResponse.put(updatedObject.object);
+						} else {
+							jsonResponse = new JSONArray();
+							jsonResponse.put("{\"response\": -30}");
+							return jsonResponse;
 						}
-						
-						jsonResponse.put(object);
 					} else {
 						jsonResponse.put(object);
 					}
@@ -688,42 +683,30 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							
-							Iterator<?> keys = values.keys();
+							UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 							
-							while( keys.hasNext() ) {
-							    String key = (String)keys.next();
-							    if (object.has(key)) {
-							    	try {
-										object.put(key, values.get(key));
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							    }
+							if (updatedObject.ok) {
+								jsonResponse.put(updatedObject.object);
+							} else {
+								jsonResponse = new JSONArray();
+								jsonResponse.put("{\"response\": -30}");
+								return jsonResponse;
 							}
-							
-							jsonResponse.put(object);
 							
 						} else {
 							jsonResponse.put(object);
 						}
 					} else if (ok) {
 						
-						Iterator<?> keys = values.keys();
+						UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 						
-						while( keys.hasNext() ) {
-						    String key = (String)keys.next();
-						    if (object.has(key)) {
-						    	try {
-									object.put(key, values.get(key));
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-						    }
+						if (updatedObject.ok) {
+							jsonResponse.put(updatedObject.object);
+						} else {
+							jsonResponse = new JSONArray();
+							jsonResponse.put("{\"response\": -30}");
+							return jsonResponse;
 						}
-						
-						jsonResponse.put(object);
 					} else {
 						jsonResponse.put(object);
 					}
@@ -745,42 +728,30 @@ public class Utils {
 					if (twoConditions) {
 						if (evaluateLogicalCondition(ok, object, condition2, conditionLogic)) {
 							
-							Iterator<?> keys = values.keys();
+							UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 							
-							while( keys.hasNext() ) {
-							    String key = (String)keys.next();
-							    if (object.has(key)) {
-							    	try {
-										object.put(key, values.get(key));
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							    }
+							if (updatedObject.ok) {
+								jsonResponse.put(updatedObject.object);
+							} else {
+								jsonResponse = new JSONArray();
+								jsonResponse.put("{\"response\": -30}");
+								return jsonResponse;
 							}
-							
-							jsonResponse.put(object);
 							
 						} else {
 							jsonResponse.put(object);
 						}
 					} else if (ok) {
 						
-						Iterator<?> keys = values.keys();
+						UpdatedJsonObject updatedObject = updateJsonObject(object, values, jsonStruct);
 						
-						while( keys.hasNext() ) {
-						    String key = (String)keys.next();
-						    if (object.has(key)) {
-						    	try {
-									object.put(key, values.get(key));
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-						    }
+						if (updatedObject.ok) {
+							jsonResponse.put(updatedObject.object);
+						} else {
+							jsonResponse = new JSONArray();
+							jsonResponse.put("{\"response\": -30}");
+							return jsonResponse;
 						}
-						
-						jsonResponse.put(object);
 					} else {
 						jsonResponse.put(object);
 					}
@@ -797,10 +768,74 @@ public class Utils {
 			return jsonResponse;
 		}
 		
+		public static class UpdatedJsonObject {
+		    boolean ok;
+		    JSONObject object;
+		    
+		    public UpdatedJsonObject(boolean ok, JSONObject object) {
+				this.ok = ok;
+				this.object = object;
+			}
+		    
+		}
+		
+		public static UpdatedJsonObject updateJsonObject(JSONObject object, JSONObject values, JSONObject jsonStruct) {
+			
+			Iterator<?> keys = values.keys();
+			
+			while( keys.hasNext() ) {
+			    String key = (String)keys.next();
+			    if (object.has(key)) {
+			    	try {
+			    		
+			    		if (!isValueCorrect(jsonStruct, values, key)) {
+			    			
+			    			return new UpdatedJsonObject(false, object);
+			    		}
+			    		
+						object.put(key, values.get(key));
+					} catch (JSONException e) {
+						e.printStackTrace();
+						return new UpdatedJsonObject(false, object);
+					}
+			    }
+			}
+			
+			return new UpdatedJsonObject(true, object);
+		}
+		
+		public static boolean isValueCorrect(JSONObject jsonStruct, JSONObject values, String key) {
+			
+			try {
+				if (jsonStruct.getString(key).equals("number")) {
+					
+					if (values.get(key) instanceof String) {
+						return false;
+					}
+					
+				} else {
+					if (values.get(key) instanceof Double) {
+						return false;
+					}
+					if (values.get(key) instanceof Float) {
+						return false;
+					}
+					if (values.get(key) instanceof Integer) {
+						return false;
+					}
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		
 		
 		public static int getMaxId(JSONArray jsonFile) {
 			
-			int maxId = 0;
+			int maxId = -1;
 			
 			for(int i=0; i<jsonFile.length(); i++) {
 				
@@ -812,9 +847,13 @@ public class Utils {
 				int id;
 				
 				try {
-					id = object.getInt("id");
-					if (id > maxId) {
-						maxId = id;
+					if(object.has("id")) {
+						id = object.getInt("id");
+						if (id > maxId) {
+							maxId = id;
+						}
+					} else {
+						return -1;
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
