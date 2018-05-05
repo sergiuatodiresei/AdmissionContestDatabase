@@ -23,7 +23,7 @@ URL fisier *criterii_insert_students.json*:
 - In caz ca nu se citeste bine un fisier din s3 (amazon) sau tabelul(fisierul) nu exista, raspunsul va fi: **{ "response": -10}**
 - In caz ca nu este primit in json numele tabelui si/sau operatia ceruta, raspunsul va fi : **{ "response": -11}**
 - In caz ca se trimite o operatie gresita (*operation*), raspunsul va fi: **{ "response": -12}**
-In cadrul unei conditii:
+<br />In cadrul unei conditii:
 - In caz ca se trimite un operator gresit (*operator*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -13}**
 - In caz ca se trimite o cheie gresita (*key*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -14}**
 - In caz ca se trimite o valoare de comparatie gresita (*value*) sau nu se trimite deloc, raspunsul va fi: **{ "response": -15}**
@@ -39,7 +39,7 @@ In cadrul unei conditii:
 - **create**
 - **drop**
 
-## Pentru a specifica tabelul pot fi trimise urmatoarle valori:
+## Pentru a specifica tabelul pot fi trimise urmatoarele valori:
 - **from**
 - **into**
 - **table**
@@ -123,7 +123,7 @@ Se trimite **"operation": "select"** si **"from": "nume_tabel"**
 }
 ```
 
-- Traducere in sql: *SELECT * FROM students WHERE id <= 10 OR first_name = 'Mircea'*
+- Traducere in sql: *SELECT * FROM students WHERE id = 1 OR first_name = 'Mircea'*
 
 
 # INSERT
@@ -174,7 +174,7 @@ Pentru tabelul students, media nu trebuie trimisa, se calculeaza automat pe baza
 ## Posibile erori:
 
 - In caz ca nu se trimite values, raspunsul va fi: **{ "response": -16}**
-- In caz ca nu s-a putut citi tabelul "criterii_insert_json" raspunsul va fi: **{ "response": -17}**
+- In caz ca nu s-a putut citi tabelul "criterii_insert_students" raspunsul va fi: **{ "response": -17}**
 - In caz ca nu se trimite medie_bac, raspunsul va fi: **{ "response": -18}**
 - In caz ca nu se trimite nota_examen, raspunsul va fi: **{ "response": -19}**
 - In caz ca pentru medie_bac se trimit alte valori din intervalul [5,10], raspunsul va fi: **{ "response": -20}**
@@ -350,7 +350,7 @@ Se trimite perechea cheia **"values"** si un json ce contine ca si chei "coloane
 
 **Daca create-ul s-a efectuat cu succes, raspunsul va fi {"response": 1}.**
 
-Daca create-ul s-a efectuat cu succes, vor fi create 2 fisiere in storage, *nume_tabel.json* (un fisier cu array empty) si *struct_nume_tabel.json* (acesta contine structura tabelul, adica ce se trimite in *values*.
+Daca create-ul s-a efectuat cu succes, vor fi create 2 fisiere in storage, *nume_tabel.json* (un fisier cu array empty) si *struct_nume_tabel.json* (acesta contine structura tabelul, adica ce se trimite in *values*).
 
 ## Exemplu de test:
 
