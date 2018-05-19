@@ -42,6 +42,7 @@ public class Utils {
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
 				
+				//precondition
 				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
 						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				
@@ -208,6 +209,7 @@ public class Utils {
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
 				
+				//precondition
 				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
 						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				
@@ -462,6 +464,7 @@ public class Utils {
 			
 			JSONObject values = requestParser.getValues();
 			
+			//precondition
 			assert values != null : "The values are invalid";
 			
 			JSONArray jsonResponse = new JSONArray();
@@ -506,6 +509,7 @@ public class Utils {
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
 				
+				//precondition
 				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
 						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				

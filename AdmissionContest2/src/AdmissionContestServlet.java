@@ -160,6 +160,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		if (requestParser.getCondition1() != null) {
 			
+			//preconditions
 			assert requestParser.getCondition1().op != RequestParser.OPERATOR.INVALID_OPERATOR: "The first operator is invalid";
 			
 			assert requestParser.getCondition1().key != null && !requestParser.getCondition1().key.isEmpty(): "The first key is invalid";
@@ -196,6 +197,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		if (requestParser.getCondition2() != null) {
 			
+			//preconditions
 			assert requestParser.getCondition2().op != RequestParser.OPERATOR.INVALID_OPERATOR: "The second operator is invalid";
 			
 			assert requestParser.getCondition2().key != null && !requestParser.getCondition2().key.isEmpty(): "The second key is invalid";
@@ -240,6 +242,7 @@ public class AdmissionContestServlet extends HttpServlet {
 			jsonFile = ao.downloadJson(pathFile);
 		} else {
 			
+			//precondition
 			assert requestParser.getOperation() == RequestParser.OPERATION.CREATE: "The table does not exist";
 			
 			if (requestParser.getOperation() != RequestParser.OPERATION.CREATE) {
@@ -341,6 +344,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		JSONObject values = requestParser.getValues();
 		
+		//precondition
 		assert values != null : "Values are invalid";
 	
 		if (values == null || table == null) {
@@ -504,6 +508,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		JSONArray values= requestParser.getValuesArray();
 		
+		//precondition
 		assert values != null && values.length() != 0: "Values are invalid";
 	
 		if (values == null || table == null) {
@@ -761,6 +766,7 @@ public class AdmissionContestServlet extends HttpServlet {
 			jsonStructFile = ao.downloadJson(folder + "struct_" + requestParser.getTable() + ".json");
 		}
 		
+		//precondition
 		assert !jsonStructFile.isEmpty(): "Struct file does not exist";
 		
 		if (jsonStructFile.isEmpty()) {
@@ -849,6 +855,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		JSONObject values = requestParser.getValues();
 		
+		//precondition
 		assert values != null: "Values are not valid";
 		
 		if (values == null) {
