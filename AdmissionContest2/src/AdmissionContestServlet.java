@@ -61,6 +61,8 @@ public class AdmissionContestServlet extends HttpServlet {
 	
 	String folder = "database/";
 	
+	String table;
+	RequestParser.OPERATION operation;
 
     /**
      * Default constructor. 
@@ -105,6 +107,8 @@ public class AdmissionContestServlet extends HttpServlet {
 		      jb.append(line);
 		 } catch (Exception e) { 
 			 out.print("{\"response\": -1}");
+			 response.setStatus(400);
+			 
 		 }
 
 		try {
@@ -113,7 +117,10 @@ public class AdmissionContestServlet extends HttpServlet {
 		    RequestParser requestParser = new RequestParser();
 		    requestParser.parse(jsonObject);
 		    
-		    requestController(requestParser, out);
+		    table = requestParser.getTable();
+		    operation = requestParser.getOperation();
+		    
+		    requestController(requestParser,response, out);
 		    
 		  } catch (JSONException e) {
 		    // crash and burn
@@ -123,11 +130,24 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 	}
 	
+	private boolean areTableAndOperationOK() {
+		
+		if(table == null  || table.isEmpty() || operation == null || operation == RequestParser.OPERATION.INVALID_OPERATION) {
+			return false;
+		}
+		return true;
+		
+	}
 	
-	public void requestController(RequestParser requestParser, PrintWriter response) {
+	
+	public void requestController(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
+		
+		//invariant
+		assert areTableAndOperationOK() : "The tabel or operation is invalid";
 		
 		if(requestParser.getTable() == null  || requestParser.getOperation() == null) {
 			response.print("{\"response\": -11}");
+			httpResponse.setStatus(400);
 			return ;
 		}
 		
@@ -139,48 +159,73 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		
 		if (requestParser.getCondition1() != null) {
+			
+			assert requestParser.getCondition1().op != RequestParser.OPERATOR.INVALID_OPERATOR: "The first operator is invalid";
+			
+			assert requestParser.getCondition1().key != null && !requestParser.getCondition1().key.isEmpty(): "The first key is invalid";
+			
+			assert requestParser.getCondition1().stringValue != null && !requestParser.getCondition1().stringValue.isEmpty(): "The first value is invalid";
+			
 			if (requestParser.getCondition1().op == RequestParser.OPERATOR.INVALID_OPERATOR) {
 				response.print("{\"response\": -13}");
+				httpResponse.setStatus(400);
 				return ; 
 			}
 			
 			if (requestParser.getCondition1().key == null) {
 				response.print("{\"response\": -14}");
+				httpResponse.setStatus(400);
 				return ;
 			} else if (requestParser.getCondition1().key.isEmpty()) {
 				response.print("{\"response\": -14}");
+				httpResponse.setStatus(400);
 				return ;
 			}
 			
 			if (requestParser.getCondition1().stringValue == null) {
 				response.print("{\"response\": -15}");
+				httpResponse.setStatus(400);
 				return ;
 			} else if (requestParser.getCondition1().stringValue.isEmpty()) {
 				response.print("{\"response\": -15}");
+				httpResponse.setStatus(400);
 				return ;
 			}
 			
 		}
 		
 		if (requestParser.getCondition2() != null) {
+			
+			assert requestParser.getCondition2().op != RequestParser.OPERATOR.INVALID_OPERATOR: "The second operator is invalid";
+			
+			assert requestParser.getCondition2().key != null && !requestParser.getCondition2().key.isEmpty(): "The second key is invalid";
+			
+			assert requestParser.getCondition2().stringValue != null && !requestParser.getCondition2().stringValue.isEmpty(): "The second value is invalid";
+			
+			
 			if (requestParser.getCondition2().op == RequestParser.OPERATOR.INVALID_OPERATOR) {
 				response.print("{\"response\": -13}");
+				httpResponse.setStatus(400);
 				return ; 
 			}
 			
 			if (requestParser.getCondition2().key == null) {
 				response.print("{\"response\": -14}");
+				httpResponse.setStatus(400);
 				return ;
 			} else if (requestParser.getCondition2().key.isEmpty()) {
 				response.print("{\"response\": -14}");
+				httpResponse.setStatus(400);
 				return ;
 			}
 			
 			if (requestParser.getCondition2().stringValue == null) {
 				response.print("{\"response\": -15}");
+				httpResponse.setStatus(400);
 				return ;
 			} else if (requestParser.getCondition2().stringValue.isEmpty()) {
 				response.print("{\"response\": -15}");
+				httpResponse.setStatus(400);
 				return ;
 			}
 			
@@ -195,8 +240,11 @@ public class AdmissionContestServlet extends HttpServlet {
 			jsonFile = ao.downloadJson(pathFile);
 		} else {
 			
+			assert requestParser.getOperation() == RequestParser.OPERATION.CREATE: "The table does not exist";
+			
 			if (requestParser.getOperation() != RequestParser.OPERATION.CREATE) {
 				response.print("{\"response\": -10}");
+				httpResponse.setStatus(400);
 				return;
 			}
 			
@@ -204,6 +252,7 @@ public class AdmissionContestServlet extends HttpServlet {
 
 		if (jsonFile.isEmpty() && requestParser.getOperation() != RequestParser.OPERATION.CREATE && requestParser.getOperation() != RequestParser.OPERATION.DROP &&  requestParser.getOperation() != RequestParser.OPERATION.INSERT) {
 			response.print("{\"response\": -10}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
@@ -216,35 +265,35 @@ public class AdmissionContestServlet extends HttpServlet {
 				
 				if(requestParser.getTable().equals("criterii_insert_students")) {
 					
-					String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
-					response.print(jsonCriteriiFile);
+					//String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+					response.print(Utils.jsonCriteriiFile);
 					return;
 				}
 				
 				jsonData = new JSONArray(jsonFile);
-				handleSelect(requestParser, jsonData, response);
+				handleSelect(requestParser, jsonData, httpResponse, response);
 				break;
 			case INSERT: 
 				jsonData = new JSONArray(jsonFile);
-				handleInsert(requestParser, jsonData, pathFile, response);
+				handleInsert(requestParser, jsonData, pathFile, httpResponse, response);
 				break;
 			case INSERT_ARRAY: 
 				jsonData = new JSONArray(jsonFile);
-				handleInsertArray(requestParser, jsonData, pathFile, response);
+				handleInsertArray(requestParser, jsonData, pathFile, httpResponse, response);
 				break;
 			case UPDATE: 
 				jsonData = new JSONArray(jsonFile);
-				handleUpdate(requestParser, jsonData, pathFile, response);
+				handleUpdate(requestParser, jsonData, pathFile, httpResponse, response);
 				break;
 			case DELETE: 
 				jsonData = new JSONArray(jsonFile);
-				handleDelete(requestParser, jsonData, pathFile, response);
+				handleDelete(requestParser, jsonData, pathFile, httpResponse, response);
 				break;
 			case CREATE: 
-				handleCreate(requestParser, response);
+				handleCreate(requestParser, httpResponse, response);
 				break;
 			case DROP:
-				handleDelete(requestParser, response);
+				handleDrop(requestParser, httpResponse, response);
 				break;
 			case  INVALID_OPERATION: 
 				response.print("{\"response\": -1}");
@@ -262,9 +311,12 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 	}
 	
-	public void handleSelect(RequestParser requestParser, JSONArray jsonFile, PrintWriter response) {
+	public void handleSelect(RequestParser requestParser, JSONArray jsonFile,  HttpServletResponse httpResponse, PrintWriter response) {
 		
 		JSONArray filteredObjects = Utils.getFilteredObjects(requestParser, jsonFile);
+		
+		//postconditions
+		assert (!filteredObjects.toString().equals("[{\"response\":-13}]") && !filteredObjects.toString().equals("[{\"response\":-23}]") && !filteredObjects.toString().equals("[{\"response\":-24}]")) : "Error select";
 		
 		if (!filteredObjects.toString().equals("[{\"response\":-13}]") && !filteredObjects.toString().equals("[{\"response\":-23}]") && !filteredObjects.toString().equals("[{\"response\":-24}]")) {
 			
@@ -272,30 +324,37 @@ public class AdmissionContestServlet extends HttpServlet {
 			
 		} else if(filteredObjects.toString().equals("[{\"response\":-13}]")) {
 				response.print("{\"response\": -13}");
+				httpResponse.setStatus(400);
 			} else if(filteredObjects.toString().equals("[{\"response\":-23}]")) {
 				response.print("{\"response\": -23}");
+				httpResponse.setStatus(400);
 			} else {
 				response.print("{\"response\": -24}");
+				httpResponse.setStatus(400);
 			}
 				
 	}
 	
 	
 	
-	public void handleInsert(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
+	public void handleInsert(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
 		
 		JSONObject values = requestParser.getValues();
 		
-		String table = requestParser.getTable();
+		assert values != null : "Values are invalid";
 	
 		if (values == null || table == null) {
 			response.print("{\"response\": -16}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
+		
 		String jsonStructFile = "";
 		
-		if (ao.fileExist(folder + "struct_" + table + ".json")) {
+		if (table.equals("students")) {
+			jsonStructFile = Utils.structStudents;
+		} else if (ao.fileExist(folder + "struct_" + table + ".json")) {
 			jsonStructFile = ao.downloadJson(folder + "struct_" + table + ".json");
 		}
 		
@@ -318,20 +377,24 @@ public class AdmissionContestServlet extends HttpServlet {
 				    		
 				    		if (values.get(key) instanceof String) {
 				    			response.print("{\"response\": -30}");
+				    			httpResponse.setStatus(400);
 				    			return;
 				    		}
 				    		
 				    	} else {
 				    		if (values.get(key) instanceof Double) {
 				    			response.print("{\"response\": -30}");
+				    			httpResponse.setStatus(400);
 				    			return;
 				    		}
 				    		if (values.get(key) instanceof Float) {
 				    			response.print("{\"response\": -30}");
+				    			httpResponse.setStatus(400);
 				    			return;
 				    		}
 				    		if (values.get(key) instanceof Integer) {
 				    			response.print("{\"response\": -30}");
+				    			httpResponse.setStatus(400);
 				    			return;
 				    		}
 				    	}
@@ -357,18 +420,21 @@ public class AdmissionContestServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			response.print("{\"response\": -22}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
 		
 		if (requestParser.getTable().equals("students")) {
 			
-			String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+//			String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+			String jsonCriteriiFile = Utils.jsonCriteriiFile;
 			
-			if (jsonCriteriiFile.isEmpty()) {
-				response.print("{\"response\": -17}");
-				return;
-			}
+//			if (jsonCriteriiFile.isEmpty()) {
+//				response.print("{\"response\": -17}");
+//				httpResponse.setStatus(400);
+//				return;
+//			}
 			
 			JSONObject jsonCriterii;
 			try {
@@ -382,11 +448,13 @@ public class AdmissionContestServlet extends HttpServlet {
 				
 				if (!values.has("medie_bac")) {
 					response.print("{\"response\": -18}");
+					httpResponse.setStatus(400);
 					return;
 				}
 				
 				if (!values.has("nota_examen")) {
 					response.print("{\"response\": -19}");
+					httpResponse.setStatus(400);
 					return;
 				}
 				
@@ -395,11 +463,13 @@ public class AdmissionContestServlet extends HttpServlet {
 				
 				if (medieBac > 10 || medieBac < 5) {
 					response.print("{\"response\": -20}");
+					httpResponse.setStatus(400);
 					return;
 				}
 				
 				if (notaExamen > 10 || notaExamen < 0) {
 					response.print("{\"response\": -21}");
+					httpResponse.setStatus(400);
 					return;
 				}
 				
@@ -411,6 +481,7 @@ public class AdmissionContestServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				response.print("{\"response\": -22}");
+				httpResponse.setStatus(400);
 				return;
 			}
 		
@@ -419,6 +490,9 @@ public class AdmissionContestServlet extends HttpServlet {
 			
 		jsonFile.put(values);
 		
+		//postcondition
+		assert !jsonFile.toString().isEmpty(): "Cannot insert empty student";
+		
 		ao.uploadJson(pathFile, jsonFile.toString());
 		
 		response.print("{\"response\": 1}");
@@ -426,39 +500,44 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 	}
 	
-	public void handleInsertArray(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
+	public void handleInsertArray(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
 		
 		JSONArray values= requestParser.getValuesArray();
 		
-		
-		
-		String table = requestParser.getTable();
+		assert values != null && values.length() != 0: "Values are invalid";
 	
 		if (values == null || table == null) {
 			response.print("{\"response\": -16}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
 		if (values.length() == 0) {
 			response.print("{\"response\": -16}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
 		String jsonStructFile = "";
 		
-		if (ao.fileExist(folder + "struct_" + table + ".json")) {
+		if (table.equals("students")) {
+			jsonStructFile = Utils.structStudents;
+		} else if (ao.fileExist(folder + "struct_" + table + ".json")) {
 			jsonStructFile = ao.downloadJson(folder + "struct_" + table + ".json");
 		}
 		
 	
 		if (requestParser.getTable().equals("students")) {
 			
-			String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
+//			String jsonCriteriiFile = ao.downloadJson(folder + "criterii_insert_students.json");
 			
-			if (jsonCriteriiFile.isEmpty()) {
-				response.print("{\"response\": -17}");
-				return;
-			}
+			String jsonCriteriiFile = Utils.jsonCriteriiFile;
+			
+//			if (jsonCriteriiFile.isEmpty()) {
+//				response.print("{\"response\": -17}");
+//				httpResponse.setStatus(400);
+//				return;
+//			}
 			
 			JSONObject jsonCriterii;
 			try {
@@ -476,16 +555,19 @@ public class AdmissionContestServlet extends HttpServlet {
 					
 					if (value == null) {
 						response.print("{\"response\": -16}");
+						httpResponse.setStatus(400);
 						return;
 					}
 				
 					if (!value.has("medie_bac")) {
 						response.print("{\"response\": -18}");
+						httpResponse.setStatus(400);
 						return;
 					}
 					
 					if (!value.has("nota_examen")) {
 						response.print("{\"response\": -19}");
+						httpResponse.setStatus(400);
 						return;
 					}
 					
@@ -507,20 +589,24 @@ public class AdmissionContestServlet extends HttpServlet {
 						    		
 						    		if (value.get(key) instanceof String) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		
 						    	} else {
 						    		if (value.get(key) instanceof Double) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		if (value.get(key) instanceof Float) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		if (value.get(key) instanceof Integer) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    	}
@@ -547,11 +633,13 @@ public class AdmissionContestServlet extends HttpServlet {
 					
 					if (medieBac > 10 || medieBac < 5) {
 						response.print("{\"response\": -20}");
+						httpResponse.setStatus(400);
 						return;
 					}
 					
 					if (notaExamen > 10 || notaExamen < 0) {
 						response.print("{\"response\": -21}");
+						httpResponse.setStatus(400);
 						return;
 					}
 					
@@ -566,6 +654,7 @@ public class AdmissionContestServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				response.print("{\"response\": -22}");
+				httpResponse.setStatus(400);
 				return;
 			}
 		
@@ -579,6 +668,7 @@ public class AdmissionContestServlet extends HttpServlet {
 					
 					if (value == null) {
 						response.print("{\"response\": -16}");
+						httpResponse.setStatus(400);
 						return;
 					}
 				
@@ -600,20 +690,24 @@ public class AdmissionContestServlet extends HttpServlet {
 						    		
 						    		if (value.get(key) instanceof String) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		
 						    	} else {
 						    		if (value.get(key) instanceof Double) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		if (value.get(key) instanceof Float) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    		if (value.get(key) instanceof Integer) {
 						    			response.print("{\"response\": -30}");
+						    			httpResponse.setStatus(400);
 						    			return;
 						    		}
 						    	}
@@ -640,10 +734,14 @@ public class AdmissionContestServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				response.print("{\"response\": -22}");
+				httpResponse.setStatus(400);
 				return;
 			}
 		
 		}
+		
+		//postcondition
+		assert !jsonFile.toString().isEmpty(): "Cannot insert empty students ";
 		
 		ao.uploadJson(pathFile, jsonFile.toString());
 			
@@ -653,13 +751,17 @@ public class AdmissionContestServlet extends HttpServlet {
 	}
 	
 	
-	public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
+	public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
 		
 		String jsonStructFile = "";
 		
-		if (ao.fileExist(folder + "struct_" + requestParser.getTable() + ".json")) {
+		if (requestParser.getTable().equals("students")) {
+			jsonStructFile = Utils.structStudents;
+		} else if (ao.fileExist(folder + "struct_" + requestParser.getTable() + ".json")) {
 			jsonStructFile = ao.downloadJson(folder + "struct_" + requestParser.getTable() + ".json");
 		}
+		
+		assert !jsonStructFile.isEmpty(): "Struct file does not exist";
 		
 		if (jsonStructFile.isEmpty()) {
 			response.print("{\"response\": -1}");
@@ -672,10 +774,19 @@ public class AdmissionContestServlet extends HttpServlet {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			response.print("{\"response\": -1}");
+			httpResponse.setStatus(400);
 			e.printStackTrace();
 		}
 		
 		JSONArray updatedObjects = Utils.getUpdatedObjects(requestParser, jsonFile, jsonStruct);
+		
+		//postcondition
+		assert (!updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") 
+				&& !updatedObjects.toString().equals("[\"{\\\"response\\\": -13}\"]") 
+				&& !updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") 
+				&& !updatedObjects.toString().equals("[\"{\\\"response\\\": -23}\"]") 
+				&&  !updatedObjects.toString().equals("[\"{\\\"response\\\": -24}\"]") 
+				&&  !updatedObjects.toString().equals("[\"{\\\"response\\\": -30}\"]")): "Error Update";
 		
 		if (!updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") && !updatedObjects.toString().equals("[\"{\\\"response\\\": -13}\"]") 
 				&& !updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]") && !updatedObjects.toString().equals("[\"{\\\"response\\\": -23}\"]") 
@@ -686,27 +797,35 @@ public class AdmissionContestServlet extends HttpServlet {
 			response.print("{\"response\": 1}");
 		}else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -1}\"]")) {
 			response.print("{\"response\": -1}");
+			httpResponse.setStatus(400);
 		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -13}\"]")) {
 			response.print("{\"response\": -13}");
+			httpResponse.setStatus(400);
 		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -16}\"]")) {
 			response.print("{\"response\": -16}");
+			httpResponse.setStatus(400);
 		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -23}\"]")) {
 			response.print("{\"response\": -23}");
+			httpResponse.setStatus(400);
 		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -24}\"]")) {
 			response.print("{\"response\": -24}");
+			httpResponse.setStatus(400);
 		} else if (updatedObjects.toString().equals("[\"{\\\"response\\\": -30}\"]")) {
 			response.print("{\"response\": -30}");
+			httpResponse.setStatus(400);
 		}
 		
-		
-		
-//		response.print("{\"response\": 1}");
 	}
 	
 	
-	public void handleDelete(RequestParser requestParser, JSONArray jsonFile, String pathFile, PrintWriter response) {
+	public void handleDelete(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
 		
 		JSONArray filteredObjects = Utils.getDifferenceFilteredObjects(requestParser, jsonFile);
+		
+		//postcondition
+		assert (!filteredObjects.toString().equals("[{\"response\":-13}]") && 
+				!filteredObjects.toString().equals("[{\"response\":-23}]") && 
+				!filteredObjects.toString().equals("[{\"response\":-24}]")) : "Error Delete";
 		
 		if (!filteredObjects.toString().equals("[{\"response\":-13}]") && !filteredObjects.toString().equals("[{\"response\":-23}]") && !filteredObjects.toString().equals("[{\"response\":-24}]")) {
 		
@@ -714,28 +833,27 @@ public class AdmissionContestServlet extends HttpServlet {
 			response.print("{\"response\": 1}");
 		} else if(filteredObjects.toString().equals("[{\"response\":-13}]")) {
 			response.print("{\"response\": -13}");
+			httpResponse.setStatus(400);
 		} else if(filteredObjects.toString().equals("[{\"response\":-23}]")) {
 			response.print("{\"response\": -23}");
+			httpResponse.setStatus(400);
 		} else {
 			response.print("{\"response\": -24}");
+			httpResponse.setStatus(400);
 		}
 			
 	}
 	
-	public void handleCreate(RequestParser requestParser, PrintWriter response) {
+	public void handleCreate(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
 		
-		
-		if (requestParser.getTable() == null) {
-			response.print("{\"response\": -11}");
-			return;
-		}
-		
-		String table = requestParser.getTable();
 		
 		JSONObject values = requestParser.getValues();
 		
+		assert values != null: "Values are not valid";
+		
 		if (values == null) {
 			response.print("{\"response\": -16}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
@@ -743,6 +861,7 @@ public class AdmissionContestServlet extends HttpServlet {
 		
 		if (ao.fileExist(pathFile)) {
 			response.print("{\"response\": 0}");
+			httpResponse.setStatus(400);
 			return;
 		}
 		
@@ -754,11 +873,13 @@ public class AdmissionContestServlet extends HttpServlet {
 		    try {
 				if (!values.getString(key).equals("number") && !values.getString(key).equals("text")) {
 					response.print("{\"response\": -29}");
+					httpResponse.setStatus(400);
 					return;
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 				response.print("{\"response\": -29}");
+				httpResponse.setStatus(400);
 				return;
 			}
 		}
@@ -766,25 +887,23 @@ public class AdmissionContestServlet extends HttpServlet {
 		ao.uploadJson(pathFile, "[]");
 		
 		pathFile = folder + "struct_"+table + ".json";
+		
+		//postcondition
+		assert !values.toString().isEmpty(): "Error Create";
+		
 		ao.uploadJson(pathFile, values.toString());
 		
 		response.print("{\"response\": 1}");
 			
 	}
 	
-	public void handleDelete(RequestParser requestParser, PrintWriter response) {
-		
-		if (requestParser.getTable() == null) {
-			response.print("{\"response\": -11}");
-			return;
-		}
-		
-		String table = requestParser.getTable();
+	public void handleDrop(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
 		
 		if (ao.deleteFiles(table)) {
 			response.print("{\"response\": 1}");
 		} else {
 			response.print("{\"response\": 0}");
+			httpResponse.setStatus(400);
 		}
 				
 	}

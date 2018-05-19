@@ -6,14 +6,30 @@ import org.json.JSONObject;
 
 public class Utils {
 	
+	public static String jsonCriteriiFile = "{  \r\n" + 
+			"	\"pondere_bac\": 0.5,\r\n" + 
+			"	\"pondere_examen\": 0.5,\r\n" + 
+			"	\"nota_min_admis\": 5,\r\n" + 
+			"	\"nr_locuri_buget\": 5,\r\n" + 
+			"	\"nr_locuri_taxa\": 3\r\n" + 
+			"}";
+	
+	public static String structStudents = "{\r\n" + 
+			"medie: \"number\",\r\n" + 
+			"last_name: \"text\",\r\n" + 
+			"nota_examen: \"number\",\r\n" + 
+			"id: \"number\",\r\n" + 
+			"medie_bac: \"number\",\r\n" + 
+			"first_name: \"text\"\r\n" + 
+			"}";
+	
 	public static JSONArray getFilteredObjects(RequestParser requestParser, JSONArray jsonFile) {
-			
+		
 			if (requestParser.getCondition1() == null && requestParser.getCondition2() == null) {
 				return jsonFile;
 			}
 			
 			JSONArray jsonResponse = new JSONArray();
-			
 			
 			
 			RequestParser.Condition condition1 = requestParser.getCondition1();
@@ -25,6 +41,9 @@ public class Utils {
 			Boolean twoConditions = false;
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
+				
+				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
+						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				
 				if (conditionLogic == RequestParser.CONDITION_LOGIC.INVALID_CONDITION || conditionLogic == RequestParser.CONDITION_LOGIC.NOT_NEEDED) {
 					jsonResponse.put("{\"response\": -23}");
@@ -188,6 +207,9 @@ public class Utils {
 			Boolean twoConditions = false;
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
+				
+				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
+						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				
 				if (conditionLogic == RequestParser.CONDITION_LOGIC.INVALID_CONDITION || conditionLogic == RequestParser.CONDITION_LOGIC.NOT_NEEDED) {
 					jsonError.put("{\"response\": -23}");
@@ -438,10 +460,11 @@ public class Utils {
 		
 		public static JSONArray getUpdatedObjects(RequestParser requestParser, JSONArray jsonFile, JSONObject jsonStruct) {
 			
-			JSONArray jsonResponse = new JSONArray();
-			
 			JSONObject values = requestParser.getValues();
 			
+			assert values != null : "The values are invalid";
+			
+			JSONArray jsonResponse = new JSONArray();
 			if (values == null) {
 				jsonResponse.put("{\"response\": -16}");
 				return jsonResponse;
@@ -482,6 +505,9 @@ public class Utils {
 			Boolean twoConditions = false;
 			
 			if (requestParser.getCondition1() != null && requestParser.getCondition2() != null && requestParser.getLogicalCondition() != null) {
+				
+				assert conditionLogic != RequestParser.CONDITION_LOGIC.INVALID_CONDITION && 
+						conditionLogic != RequestParser.CONDITION_LOGIC.NOT_NEEDED: "The logical condition is invalid";
 				
 				if (conditionLogic == RequestParser.CONDITION_LOGIC.INVALID_CONDITION || conditionLogic == RequestParser.CONDITION_LOGIC.NOT_NEEDED) {
 					jsonResponse.put("{\"response\": -23}");
