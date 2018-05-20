@@ -72,7 +72,7 @@ Metoda **handleOperator()** din clasa RequestParser
 | <> | INVALID_OPERATOR | 
 
 
-## Teste pentru clasa utils
+## Teste pentru clasa Utils
 
 Vom considera același input pentru toate testele cu select, iar in funcție de metoda apelată va fi produs un output diferit.
  
