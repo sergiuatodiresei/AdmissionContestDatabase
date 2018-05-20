@@ -25,9 +25,9 @@ Output:
 -	Operație: variabila de tipul OPERATION.SELECT
 -	Tabel: String ”students”
 -	Condiția 1: 
-o	key = id
-o	operator = OPERATOR.E
-o	value = 1
+    -	key = id
+    -	operator = OPERATOR.E
+    -	value = 1
 -	Condiția 2:
 o	Key = first_name
 o	Operator = OPERATOR.E
