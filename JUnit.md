@@ -1,6 +1,6 @@
 # Documentație unit testing
 
-#### Metoda *parse()* din clasa RequestParser
+Metoda *parse()* din clasa RequestParser
 
 Input:
 ```json
@@ -35,7 +35,7 @@ Output:
 -	Condiția logică: LOGICAL_CONDITION.OR
 
 
-### Metoda *handleOperation()* din clasa RequestParser
+Metoda *handleOperation()* din clasa RequestParser
 
 | INPUT | OUTPUT | 
 | :-: | :-: | 
@@ -49,7 +49,7 @@ Output:
 | get | OPERATION.INVALID_OPERATION | 
 
 
-### Metoda *handleLogicalCondition()* din clasa RequestParser
+Metoda *handleLogicalCondition()* din clasa RequestParser
 
 | INPUT | OUTPUT | 
 | :-: | :-: | 
@@ -58,7 +58,7 @@ Output:
 | maybe | CONDITION_LOGIC.INVALID_CONDITION |
 
 
-### Metoda *handleOperator()* din clasa RequestParser
+Metoda *handleOperator()* din clasa RequestParser
 
 | INPUT | OUTPUT | 
 | :-: | :-: | 
