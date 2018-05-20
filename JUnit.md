@@ -49,6 +49,7 @@ Metoda **handleOperation()** din clasa RequestParser
 | get | OPERATION.INVALID_OPERATION | 
 
 
+
 Metoda **handleLogicalCondition()** din clasa RequestParser
 
 | INPUT | OUTPUT | 
@@ -56,6 +57,7 @@ Metoda **handleLogicalCondition()** din clasa RequestParser
 | and | CONDITION_LOGIC.AND |
 | or | CONDITION_LOGIC.OR |
 | maybe | CONDITION_LOGIC.INVALID_CONDITION |
+
 
 
 Metoda **handleOperator()** din clasa RequestParser
