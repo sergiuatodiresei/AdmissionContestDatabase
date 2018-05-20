@@ -2,7 +2,7 @@
 
 ### Class Invariants
 
-Avem urmatoarea metoda:
+Avem următoarea metodă:
 ```java
 
 private boolean areTableAndOperationOK() {
@@ -14,7 +14,7 @@ private boolean areTableAndOperationOK() {
 		
 }
 ```
-Se verifica daca tabelul sau operatia efectuata pe tabel este invalida. Este obligatoriu ca acestea sa existe!
+Se verifică daca tabelul sau operația efectuată pe tabel este invalidă. Este obligatoriu ca acestea să existe!
 
 ```java
 public void requestController(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
@@ -25,7 +25,7 @@ public void requestController(RequestParser requestParser, HttpServletResponse h
 
 ### Preconditions
 
-**In AdmissionContestServlet sunt urmatoarele assert-uri:**
+**În AdmissionContestServlet sunt următoarele assert-uri:**
 
 ```java
 public void requestController(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
@@ -59,7 +59,7 @@ public void requestController(RequestParser requestParser, HttpServletResponse h
 	...
 }
 ```
-In primele 2 if-uri ne asiguram ca daca request-ul contine conditii, aceastea trebuie sa fie valide, iar in ultimul if ne asiguram ca tabelul exista pe server.
+În primele 2 if-uri ne asigurăm că dacă request-ul conține condiții, aceastea trebuie să fie valide, iar în ultimul if ne asigurăm că tabelul există pe server.
 
 ```java
 public void handleInsert(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
@@ -70,7 +70,7 @@ public void handleInsert(RequestParser requestParser, JSONArray jsonFile, String
 	...
 }
 ```
-Ne asiguram ca valorile care urmeaza a fi inserate nu sunt null.
+Ne asigurăm că valorile care urmează a fi inserate nu sunt null.
 
 
 ```java
@@ -82,7 +82,7 @@ public void handleInsertArray(RequestParser requestParser, JSONArray jsonFile, S
 	...
 }
 ```
-Ne asiguram ca array-ul de valori care urmeaza a fi inserat nu este null sau empty.
+Ne asigurăm că array-ul de valori care urmează a fi inserat nu este null sau empty.
 
 ```java
 public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
@@ -99,7 +99,7 @@ public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String
 	...
 }
 ```
-Ne asiguram ca structura tabelului exista (ce coloane are si de ce tip, number sau text).
+Ne asigurăm că structura tabelului există (ce coloane are și de ce tip, number sau text).
 
 ```java
 public void handleCreate(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
@@ -109,9 +109,9 @@ public void handleCreate(RequestParser requestParser, HttpServletResponse httpRe
 	assert values != null: "Values are not valid";
 	...
 ```
-Ne asiguram ca tabelul care urmeaza sa fie creat va avea coloane.
+Ne asigurăm că tabelul care urmează să fie creat va avea coloane.
 
-**In Utils avem urmatoarele assert-uri:**
+**În Utils avem următoarele assert-uri:**
 
 ```java
 public static JSONArray getFilteredObjects(RequestParser requestParser, JSONArray jsonFile) {
@@ -125,7 +125,7 @@ public static JSONArray getFilteredObjects(RequestParser requestParser, JSONArra
 	...
 }
 ```
-Ne asiguram ca in cazul in care avem 2 conditii, conditia logica dintre aceasta trebuie sa fie AND sau OR. La fel si in metoda *getDifferenceFilteredObjects*
+Ne asigurăm că în cazul în care avem 2 condiții, condiția logică dintre aceasta trebuie să fie AND sau OR. La fel și în metoda *getDifferenceFilteredObjects()*
 
 ```java
 public static JSONArray getUpdatedObjects(RequestParser requestParser, JSONArray jsonFile, JSONObject jsonStruct) {
@@ -133,12 +133,12 @@ public static JSONArray getUpdatedObjects(RequestParser requestParser, JSONArray
 	JSONObject values = requestParser.getValues();
 	assert values != null : "The values are invalid";
 ```
-Ne asiguram ca valorile obiectelor care urmeaza a fi modificate nu sunt null.
+Ne asigurăm că valorile obiectelor care urmează a fi modificate nu sunt null.
 
 
 ###Postconditions
 
-**In AdmissionContestServlet avem urmatoarele assert-uri:**
+**În AdmissionContestServlet avem următoarele assert-uri:**
 
 ```java
 public void handleSelect(RequestParser requestParser, JSONArray jsonFile,  HttpServletResponse httpResponse, PrintWriter response) {
@@ -149,7 +149,7 @@ public void handleSelect(RequestParser requestParser, JSONArray jsonFile,  HttpS
 		...
 }
 ```
-Ne asiguram ca ce vom returna nu este o eroare.
+Ne asigurăm că ce returnăm nu este o eroare.
 
 
 ```java
@@ -159,7 +159,7 @@ public void handleInsert(RequestParser requestParser, JSONArray jsonFile, String
 	...
 }
 ```
-Ne asiguram ca obiectul care urmeaza sa fie inserat exista.
+Ne asigurăm că obiectul care urmează să fie inserat există.
 
 ```java
 public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
@@ -174,7 +174,7 @@ public void handleUpdate(RequestParser requestParser, JSONArray jsonFile, String
 	...
 }
 ```
-Ne asiguram ca update-ul s-a efectuat cu succes si nu avem cod de eroare.
+Ne asigurăm că update-ul s-a efectuat cu succes și nu avem cod de eroare.
 
 ```java
 public void handleDelete(RequestParser requestParser, JSONArray jsonFile, String pathFile, HttpServletResponse httpResponse, PrintWriter response) {
@@ -187,7 +187,7 @@ public void handleDelete(RequestParser requestParser, JSONArray jsonFile, String
 	...
 }
 ```
-Ne asiguram ca delete-ul s-a efectuat cu succes si nu avem cod de eroare.
+Ne asigurăm că delete-ul s-a efectuat cu succes și nu avem cod de eroare.
 
 ```java
 public void handleCreate(RequestParser requestParser, HttpServletResponse httpResponse, PrintWriter response) {
@@ -197,4 +197,4 @@ public void handleCreate(RequestParser requestParser, HttpServletResponse httpRe
 	...
 }
 ```
-Ne asiguram ca tabelul a fost creat.
+Ne asigurăm ca tabelul a fost creat.
