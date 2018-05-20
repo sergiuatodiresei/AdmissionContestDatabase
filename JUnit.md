@@ -74,7 +74,7 @@ Metoda **handleOperator()** din clasa RequestParser
 
 ## Teste pentru clasa utils
 
-	Vom considera același input pentru toate testele cu select, iar in funcție de metoda apelată va fi produs un output diferit.
+Vom considera același input pentru toate testele cu select, iar in funcție de metoda apelată va fi produs un output diferit.
  
 Input:
 ```json
