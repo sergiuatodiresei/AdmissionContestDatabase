@@ -37,6 +37,8 @@ Output:
 
 ### Metoda *handleOperation()* din clasa RequestParser
 
-| Attempt | #1  | #2  |
-| :-----: | :-: | :-: |
-| Seconds | 301 | 283 |m
+| INPUT | OUTPUT | 
+| :-----: | :-: | 
+| select | OPERATION.SELECT | 
+
+
