@@ -38,7 +38,14 @@ Output:
 ### Metoda *handleOperation()* din clasa RequestParser
 
 | INPUT | OUTPUT | 
-| :-----: | :-: | 
-| select | OPERATION.SELECT | 
+| :-: | :-: | 
+| select | OPERATION.SELECT |
+| create | OPERATION.CREATE |
+| insert | OPERATION.INSERT | 
+| insert_array | OPERATION.INSERT_ARRAY | 
+| delete | OPERATION.DELETE | 
+| update | OPERATION.UPDATE | 
+| drop | OPERATION.DROP | 
+| get | OPERATION.INVALID_OPERATION | 
 
 
