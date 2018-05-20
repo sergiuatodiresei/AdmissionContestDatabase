@@ -1,6 +1,6 @@
 # Documentație unit testing
 
-Metoda **parse()** din clasa RequestParser
+### Metoda *parse()* din clasa RequestParser
 
 ```json
 INPUT:
@@ -29,7 +29,14 @@ Output:
     -	operator = OPERATOR.E
     -	value = 1
 -	Condiția 2:
-o	Key = first_name
-o	Operator = OPERATOR.E
-o	Value = ”Mircea”
+    -	key = first_name
+    -	operator = OPERATOR.E
+    -	value = ”Mircea”
 -	Condiția logică: LOGICAL_CONDITION.OR
+
+
+### Metoda *handleOperation()* din clasa RequestParser
+
+| Attempt | #1  | #2  |
+| :-----: | :-: | :-: |
+| Seconds | 301 | 283 |
