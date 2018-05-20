@@ -207,7 +207,7 @@ Output:
 }]
 ```
 
-Metoda *evaluateLogicalCondition()* returnează o valoare Boolean și verifica daca sunt validate condițiile în cazul în care se știe valoarea primei condiții.
+Metoda **evaluateLogicalCondition()** returnează o valoare Boolean și verifica daca sunt validate condițiile în cazul în care se știe valoarea primei condiții.
 
 Input: 
 - rezultat condiție 1 = true
@@ -219,9 +219,9 @@ Input:
 - CONDITIE = OR
 Output: true
 
-Metoda *evaluateMissingValues()* verifică dacă json-ul primit în request pentru operașia de update, conține cheia values.
+Metoda **evaluateMissingValues()** verifică dacă json-ul primit în request pentru operașia de update, conține cheia values.
 
-Metoda *getUpdatedObjects()* returnează un JSONArray cu obiectele din baza de date, unde cele care satisfac condițiile din input, vor avea modificate valorile date în values. În acest caz toți studenții care au id-ul >= *15* sau first_name *Mircea* vor avea media 8.
+Metoda **getUpdatedObjects()** returnează un JSONArray cu obiectele din baza de date, unde cele care satisfac condițiile din input, vor avea modificate valorile date în values. În acest caz toți studenții care au id-ul >= *15* sau first_name *Mircea* vor avea media 8.
 
 
 Input:
@@ -262,7 +262,7 @@ Output:
 ]
 ```
 
-Metoda *getUpdatedObjectsWrongFormat()* returnează codul de eroare -30, deoarece pentru cheia medie din următorul input, s-a dat un string, în loc de număr.
+Metoda **getUpdatedObjectsWrongFormat()** returnează codul de eroare -30, deoarece pentru cheia medie din următorul input, s-a dat un string, în loc de număr.
 
 Input:
 ```json
