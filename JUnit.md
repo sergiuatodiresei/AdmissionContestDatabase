@@ -398,7 +398,7 @@ Output:
 }]
 ```
 
-***Request cu un operator logic invalid**
+***Request cu un operator logic invalid***
 
 Input: 
 ```json
